@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"anybot/helpers"
-	"log"
 	"slices"
 	"sync"
 
@@ -18,8 +17,6 @@ func wasAdded(member *discordgo.GuildMemberUpdate, roleid string) bool {
 }
 
 func checkConflict(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
-	activeChecks[updatedMember.User.ID].Lock()
-
 	joinrole, verifyrole := backend.GetJoinRole(updatedMember.GuildID), backend.GetVerifyRole(updatedMember.GuildID)
 
 	if slices.Contains(updatedMember.Roles, joinrole) {
@@ -35,14 +32,14 @@ func checkConflict(discord *discordgo.Session, updatedMember *discordgo.GuildMem
 func onRoleConflictHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
 	if !(len(updatedMember.Roles) > len(updatedMember.BeforeUpdate.Roles)) {
 		return
-	} else {
-		log.Printf("User went from %d to %d roles", len(updatedMember.Roles), len(updatedMember.BeforeUpdate.Roles))
 	}
 
-	_, mutexExists := activeChecks[updatedMember.User.ID]
+	mutex, mutexExists := activeChecks[updatedMember.User.ID]
 	if !mutexExists {
 		activeChecks[updatedMember.User.ID] = new(sync.Mutex)
+		mutex = activeChecks[updatedMember.User.ID]
 	}
 
+	mutex.Lock()
 	go checkConflict(discord, updatedMember)
 }

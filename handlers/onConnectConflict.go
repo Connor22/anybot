@@ -3,6 +3,7 @@ package handlers
 import (
 	"anybot/helpers"
 	"slices"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -15,6 +16,8 @@ func asyncCheckUser(guildMember *discordgo.Member, discord *discordgo.Session, j
 			helpers.RemoveRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
 		}
 	}
+
+	activeChecks[guildMember.User.ID].Unlock()
 }
 
 func onConnectConflictHandler(discord *discordgo.Session, newConnect *discordgo.GuildCreate) {
@@ -25,6 +28,8 @@ func onConnectConflictHandler(discord *discordgo.Session, newConnect *discordgo.
 	}
 
 	for member := range newConnect.Members {
+		activeChecks[newConnect.Members[member].User.ID] = new(sync.Mutex)
+		activeChecks[newConnect.Members[member].User.ID].Lock()
 		go asyncCheckUser(newConnect.Members[member], discord, joinrole, verifyrole)
 	}
 }
