@@ -8,15 +8,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var (
-	activeChecks map[string]*sync.Mutex
-)
-
 func wasAdded(member *discordgo.GuildMemberUpdate, roleid string) bool {
 	return slices.Contains(member.Roles, roleid) && !slices.Contains(member.BeforeUpdate.Roles, roleid)
 }
 
-func checkConflict(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
+func resolveVerificationConflicts(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
 	joinrole, verifyrole := backend.GetJoinRole(updatedMember.GuildID), backend.GetVerifyRole(updatedMember.GuildID)
 
 	if slices.Contains(updatedMember.Roles, joinrole) {
@@ -26,20 +22,20 @@ func checkConflict(discord *discordgo.Session, updatedMember *discordgo.GuildMem
 		}
 	}
 
-	activeChecks[updatedMember.User.ID].Unlock()
+	userMutex[updatedMember.User.ID].Unlock()
 }
 
-func onRoleConflictHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
+func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
 	if !(len(updatedMember.Roles) > len(updatedMember.BeforeUpdate.Roles)) {
 		return
 	}
 
-	mutex, mutexExists := activeChecks[updatedMember.User.ID]
+	mutex, mutexExists := userMutex[updatedMember.User.ID]
 	if !mutexExists {
-		activeChecks[updatedMember.User.ID] = new(sync.Mutex)
-		mutex = activeChecks[updatedMember.User.ID]
+		userMutex[updatedMember.User.ID] = new(sync.Mutex)
+		mutex = userMutex[updatedMember.User.ID]
 	}
 
 	mutex.Lock()
-	go checkConflict(discord, updatedMember)
+	go resolveVerificationConflicts(discord, updatedMember)
 }

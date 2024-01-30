@@ -8,16 +8,17 @@ import (
 )
 
 var (
-	backend storage.Storage
+	backend   storage.Storage
+	userMutex map[string]*sync.Mutex
 )
 
 func Init(discord *discordgo.Session, db storage.Storage) {
 	backend = db
-	activeChecks = make(map[string]*sync.Mutex)
+	userMutex = make(map[string]*sync.Mutex)
 
-	discord.AddHandler(onRoleConflictHandler)
+	discord.AddHandler(onMemberUpdateHandler)
 
-	discord.AddHandler(onConnectConflictHandler)
+	discord.AddHandler(onGuildConnectHandler)
 
 	discord.AddHandler(onNewMemberHandler)
 }
