@@ -22,19 +22,23 @@ func resolveVerificationConflicts(discord *discordgo.Session, updatedMember *dis
 		}
 	}
 
-	userMutex[updatedMember.User.ID].Unlock()
+	discordMutexes[updatedMember.User.ID].Unlock()
 }
 
 func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
+	// Check if we need to further examine this event
 	if !(len(updatedMember.Roles) > len(updatedMember.BeforeUpdate.Roles)) {
 		return
 	}
 
-	mutex, mutexExists := userMutex[updatedMember.User.ID]
+	// Make sure nothing else is happening to this user
+	discordMutexes[updatedMember.GuildID].Lock()
+	mutex, mutexExists := discordMutexes[updatedMember.User.ID]
 	if !mutexExists {
-		userMutex[updatedMember.User.ID] = new(sync.Mutex)
-		mutex = userMutex[updatedMember.User.ID]
+		discordMutexes[updatedMember.User.ID] = new(sync.Mutex)
+		mutex = discordMutexes[updatedMember.User.ID]
 	}
+	discordMutexes[updatedMember.GuildID].Unlock()
 
 	mutex.Lock()
 	go resolveVerificationConflicts(discord, updatedMember)
