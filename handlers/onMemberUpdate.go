@@ -28,6 +28,5 @@ func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.
 		return
 	}
 
-	// Make sure nothing else is happening to this user
 	resolveVerificationConflicts(discord, updatedMember)
 }
