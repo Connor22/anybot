@@ -3,7 +3,6 @@ package handlers
 import (
 	"anybot/helpers"
 	"slices"
-	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -21,8 +20,6 @@ func resolveVerificationConflicts(discord *discordgo.Session, updatedMember *dis
 			helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, joinrole)
 		}
 	}
-
-	discordMutexes[updatedMember.User.ID].Unlock()
 }
 
 func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
@@ -32,14 +29,5 @@ func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.
 	}
 
 	// Make sure nothing else is happening to this user
-	discordMutexes[updatedMember.GuildID].Lock()
-	mutex, mutexExists := discordMutexes[updatedMember.User.ID]
-	if !mutexExists {
-		discordMutexes[updatedMember.User.ID] = new(sync.Mutex)
-		mutex = discordMutexes[updatedMember.User.ID]
-	}
-	discordMutexes[updatedMember.GuildID].Unlock()
-
-	mutex.Lock()
-	go resolveVerificationConflicts(discord, updatedMember)
+	resolveVerificationConflicts(discord, updatedMember)
 }
