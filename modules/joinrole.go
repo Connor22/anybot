@@ -8,7 +8,7 @@ import (
 )
 
 type JoinRoleMod struct {
-	flag uint32
+	flag uint8
 	name string `default:"RoleConflict"`
 }
 
@@ -22,7 +22,7 @@ func (joinmod *JoinRoleMod) Name() string {
 	return joinmod.name
 }
 
-func (joinmod *JoinRoleMod) Flag() uint32 {
+func (joinmod *JoinRoleMod) Flag() uint8 {
 	return joinmod.flag
 }
 
@@ -34,7 +34,7 @@ func (joinmod *JoinRoleMod) Intents() discordgo.Intent {
 	return intents
 }
 
-func (joinmod *JoinRoleMod) Enabled(serverFlags uint32) bool {
+func (joinmod *JoinRoleMod) Enabled(serverFlags uint8) bool {
 	return joinmod.flag|serverFlags != 0
 }
 

@@ -1,7 +1,7 @@
 package conf
 
 type AnyGuild struct {
-	Flags uint32
+	Flags uint8
 	Name  string
 	ID    string
 }

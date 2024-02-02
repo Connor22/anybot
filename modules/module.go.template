@@ -9,7 +9,7 @@ import (
 )
 
 type TemplateMod struct {
-	flag uint32
+	flag uint8
 	name string `default:"Template"`
 }
 
@@ -23,17 +23,17 @@ func (tempmod *TemplateMod) Name() string {
 	return tempmod.name
 }
 
-func (tempmod *TemplateMod) Flag() uint32 {
+func (tempmod *TemplateMod) Flag() uint8 {
 	return tempmod.flag
 }
 
 func (tempmod *TemplateMod) Intents() discordgo.Intent {
 	intents := *new(discordgo.Intent)
-	
+
 	return intents
 }
 
-func (tempmod *TemplateMod) Enabled(serverFlags uint32) bool {
+func (tempmod *TemplateMod) Enabled(serverFlags uint8) bool {
 	return tempmod.flag|serverFlags != 0
 }
 

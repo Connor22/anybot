@@ -9,7 +9,7 @@ import (
 )
 
 type RoleConflictMod struct {
-	flag uint32
+	flag uint8
 	name string `default:"RoleConflict"`
 }
 
@@ -23,7 +23,7 @@ func (roleconflictmod *RoleConflictMod) Name() string {
 	return roleconflictmod.name
 }
 
-func (roleconflictmod *RoleConflictMod) Flag() uint32 {
+func (roleconflictmod *RoleConflictMod) Flag() uint8 {
 	return roleconflictmod.flag
 }
 
@@ -35,7 +35,7 @@ func (roleconflictmod *RoleConflictMod) Intents() discordgo.Intent {
 	return intents
 }
 
-func (roleconflictmod *RoleConflictMod) Enabled(serverFlags uint32) bool {
+func (roleconflictmod *RoleConflictMod) Enabled(serverFlags uint8) bool {
 	return roleconflictmod.flag|serverFlags != 0
 }
 

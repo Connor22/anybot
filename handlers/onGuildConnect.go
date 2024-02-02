@@ -10,7 +10,7 @@ import (
 
 func asyncCheckUser(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild, modules []modules.Module) {
 	for modid, module := range modules {
-		if serverConfig.Flags|(uint32(1)<<modid) != 0 {
+		if serverConfig.Flags|(uint8(1)<<modid) != 0 {
 			module.OnGuildConnectMember(guildMember, discord, serverConfig)
 		}
 	}

@@ -9,9 +9,9 @@ import (
 type Module interface {
 	Init(int)
 	Intents() discordgo.Intent
-	Enabled(uint32) bool
+	Enabled(uint8) bool
 	Name() string
-	Flag() uint32
+	Flag() uint8
 	OnGuildConnect(*discordgo.GuildCreate, *discordgo.Session, *conf.AnyGuild)
 	OnGuildConnectMember(*discordgo.Member, *discordgo.Session, *conf.AnyGuild)
 	OnMemberUpdate(*discordgo.GuildMemberUpdate, *discordgo.Session, *conf.AnyGuild)

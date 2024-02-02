@@ -2,3 +2,4 @@ anybot
 foo.db
 go.sum
 .vscode/tasks.json
+staticcheck.conf
