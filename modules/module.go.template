@@ -1,0 +1,54 @@
+//go:build exclude
+
+package modulename
+
+import (
+	"anybot/conf"
+
+	"github.com/bwmarrin/discordgo"
+)
+
+type TemplateMod struct {
+	flag uint32
+	name string `default:"Template"`
+}
+
+func (tempmod *TemplateMod) Init(modid int) {
+	tempmod.flag = (1 << modid)
+
+	return
+}
+
+func (tempmod *TemplateMod) Name() string {
+	return tempmod.name
+}
+
+func (tempmod *TemplateMod) Flag() uint32 {
+	return tempmod.flag
+}
+
+func (tempmod *TemplateMod) Intents() discordgo.Intent {
+	intents := *new(discordgo.Intent)
+	
+	return intents
+}
+
+func (tempmod *TemplateMod) Enabled(serverFlags uint32) bool {
+	return tempmod.flag|serverFlags != 0
+}
+
+func (tempmod *TemplateMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
+	return
+}
+
+func (tempmod *TemplateMod) OnGuildConnect(guildConnection *discordgo.GuildCreate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
+	return
+}
+
+func (tempmod *TemplateMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
+	return
+}
+
+func (tempmod *TemplateMod) OnMemberUpdate(guildMember *discordgo.GuildMemberUpdate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
+	return
+}

@@ -1,12 +1,10 @@
-package storage
+package conf
 
-import "log"
-
-func (db Storage) GetVerifyRole(GuildID string) string {
+func (config *AnyGuild) GetVerifyRole() string {
 	var verifyrole string
 
 	// Temporary result until database is implemented
-	switch GuildID {
+	switch config.ID {
 	case ANIMENORTH:
 		verifyrole = ATTENDEE
 	case TESTSERVER:
@@ -20,11 +18,4 @@ func (db Storage) GetVerifyRole(GuildID string) string {
 	// }
 
 	return verifyrole
-}
-
-func (db Storage) __todo__VerifyRole(GuildID string, verifyrole string) {
-	_, err := db.Backend.Exec("UPDATE guilds SET verifyrole = ? WHERE guildid = ?", verifyrole, GuildID)
-	if err != nil {
-		log.Fatal(err)
-	}
 }

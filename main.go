@@ -2,6 +2,7 @@ package main
 
 import (
 	"anybot/handlers"
+	"anybot/modules"
 	"anybot/storage"
 	"flag"
 	"fmt"
@@ -15,23 +16,20 @@ import (
 // Command line flags
 var (
 	BotToken = flag.String("token", "", "Bot authorization token")
-
-	// Database access
-	db storage.Storage
 )
 
 func init() {
 	flag.Parse()
-	db = *storage.InitDB()
 }
 
 func main() {
+	storage.InitCache()
+	defer storage.CloseDB()
+
 	session := initBot()
-
 	defer session.Close()
-	defer db.Backend.Close()
 
-	handlers.Init(session, db)
+	handlers.Init(session)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
@@ -42,10 +40,8 @@ func main() {
 func initBot() *discordgo.Session {
 	session, _ := discordgo.New("Bot " + *BotToken)
 
-	// Intent Bits
-	session.Identify.Intents |= discordgo.IntentAutoModerationExecution
-	session.Identify.Intents |= discordgo.IntentGuildPresences
-	session.Identify.Intents |= discordgo.IntentGuildMembers
+	// Set Intent Bits
+	modules.SetIntents(session)
 
 	// Handlers
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {

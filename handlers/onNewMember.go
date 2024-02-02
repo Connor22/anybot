@@ -1,15 +1,19 @@
 package handlers
 
 import (
-	"anybot/helpers"
+	"anybot/storage"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func onNewMemberHandler(discord *discordgo.Session, newMember *discordgo.GuildMemberAdd) {
-	joinrole := backend.GetJoinRole(newMember.GuildID)
+	cache := storage.GetCache()
+	serverConfig := cache.GetGuild(discord, newMember.GuildID)
+	modules := cache.Modules
 
-	if joinrole != "" {
-		helpers.AddRole(discord, newMember.GuildID, newMember.User.ID, joinrole)
+	for _, module := range modules {
+		if module.Enabled(serverConfig.Flags) {
+			module.OnNewMember(newMember, discord, serverConfig)
+		}
 	}
 }
