@@ -29,13 +29,13 @@ func (joinmod *JoinRoleMod) Flag() uint8 {
 func (joinmod *JoinRoleMod) Intents() discordgo.Intent {
 	intents := *new(discordgo.Intent)
 
-	intents |= discordgo.IntentGuildMembers
+	intents |= discordgo.IntentGuilds
 
 	return intents
 }
 
 func (joinmod *JoinRoleMod) Enabled(serverFlags uint8) bool {
-	return joinmod.flag|serverFlags != 0
+	return joinmod.flag&serverFlags != 0
 }
 
 func (joinmod *JoinRoleMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
@@ -44,10 +44,6 @@ func (joinmod *JoinRoleMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, d
 	if joinrole != "" {
 		helpers.AddRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
 	}
-}
-
-func (joinmod *JoinRoleMod) OnGuildConnect(guildConnection *discordgo.GuildCreate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
-	return
 }
 
 func (joinmod *JoinRoleMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {

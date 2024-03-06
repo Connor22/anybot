@@ -12,9 +12,21 @@ type Module interface {
 	Enabled(uint8) bool
 	Name() string
 	Flag() uint8
+}
+
+type GuildConnectModule interface {
+	Module
 	OnGuildConnect(*discordgo.GuildCreate, *discordgo.Session, *conf.AnyGuild)
 	OnGuildConnectMember(*discordgo.Member, *discordgo.Session, *conf.AnyGuild)
+}
+
+type MemberUpdateModule interface {
+	Module
 	OnMemberUpdate(*discordgo.GuildMemberUpdate, *discordgo.Session, *conf.AnyGuild)
+}
+
+type MemberAddModule interface {
+	Module
 	OnNewMember(*discordgo.GuildMemberAdd, *discordgo.Session, *conf.AnyGuild)
 }
 

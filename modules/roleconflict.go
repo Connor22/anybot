@@ -3,6 +3,7 @@ package modules
 import (
 	"anybot/conf"
 	"anybot/helpers"
+	"log"
 	"slices"
 
 	"github.com/bwmarrin/discordgo"
@@ -36,15 +37,7 @@ func (roleconflictmod *RoleConflictMod) Intents() discordgo.Intent {
 }
 
 func (roleconflictmod *RoleConflictMod) Enabled(serverFlags uint8) bool {
-	return roleconflictmod.flag|serverFlags != 0
-}
-
-func (roleconflictmod *RoleConflictMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
-	return
-}
-
-func (roleconflictmod *RoleConflictMod) OnGuildConnect(guildConnection *discordgo.GuildCreate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
-	return
+	return roleconflictmod.flag&serverFlags != 0
 }
 
 func (roleconflictmod *RoleConflictMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
@@ -57,6 +50,8 @@ func (roleconflictmod *RoleConflictMod) OnGuildConnectMember(guildMember *discor
 	// Resolve conflicting roles
 	if slices.Contains(guildMember.Roles, joinrole) && slices.Contains(guildMember.Roles, verifyrole) {
 		helpers.RemoveRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
+	} else {
+		log.Println("Not conflicting")
 	}
 }
 

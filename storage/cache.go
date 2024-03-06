@@ -17,11 +17,12 @@ type Cache struct {
 	Modules    []modules.Module
 }
 
-var botCache Cache
+var botCache *Cache
 
 func InitCache() *Cache {
 	cache := new(Cache)
 	cache.stmts = make(map[int]*sql.Stmt)
+	cache.guilds = make(map[string]*conf.AnyGuild)
 
 	connection, err := sql.Open("sqlite3", "./foo.db")
 	if err != nil {
@@ -32,11 +33,13 @@ func InitCache() *Cache {
 
 	cache.connection = connection
 
+	botCache = cache
+
 	return cache
 }
 
 func GetCache() *Cache {
-	return &botCache
+	return botCache
 }
 
 func getGuild(discord *discordgo.Session, gid string) *conf.AnyGuild {

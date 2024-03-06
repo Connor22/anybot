@@ -34,21 +34,25 @@ func (tempmod *TemplateMod) Intents() discordgo.Intent {
 }
 
 func (tempmod *TemplateMod) Enabled(serverFlags uint8) bool {
-	return tempmod.flag|serverFlags != 0
+	return tempmod.flag&serverFlags != 0
 }
 
+// no-op
 func (tempmod *TemplateMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
+// no-op
 func (tempmod *TemplateMod) OnGuildConnect(guildConnection *discordgo.GuildCreate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
+// no-op
 func (tempmod *TemplateMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
+// no-op
 func (tempmod *TemplateMod) OnMemberUpdate(guildMember *discordgo.GuildMemberUpdate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }

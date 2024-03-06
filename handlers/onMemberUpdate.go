@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	mod "anybot/modules"
 	"anybot/storage"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,8 +13,9 @@ func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.
 	modules := cache.Modules
 
 	for _, module := range modules {
-		if module.Enabled(serverConfig.Flags) {
-			module.OnMemberUpdate(updatedMember, discord, serverConfig)
+		memUpdateMod, validModule := module.(mod.MemberUpdateModule)
+		if validModule && memUpdateMod.Enabled(serverConfig.Flags) {
+			memUpdateMod.OnMemberUpdate(updatedMember, discord, serverConfig)
 		}
 	}
 }
