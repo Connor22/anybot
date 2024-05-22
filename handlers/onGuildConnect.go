@@ -21,7 +21,7 @@ func asyncCheckUser(guildMember *discordgo.Member, discord *discordgo.Session, s
 func onGuildConnectHandler(discord *discordgo.Session, newConnect *discordgo.GuildCreate) {
 	cache := storage.GetCache()
 	serverConfig := cache.GetGuild(discord, newConnect.Guild.ID)
-	modules := cache.Modules
+	modules := cache.LoadedModules
 
 	// Run general GuildConnect functions
 	for _, module := range modules {

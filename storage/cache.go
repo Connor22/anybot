@@ -11,10 +11,10 @@ import (
 )
 
 type Cache struct {
-	connection *sql.DB
-	stmts      map[int]*sql.Stmt
-	guilds     map[string]*conf.AnyGuild
-	Modules    []modules.Module
+	connection    *sql.DB
+	stmts         map[int]*sql.Stmt
+	guilds        map[string]*conf.AnyGuild
+	LoadedModules []modules.Module
 }
 
 var botCache *Cache
@@ -29,7 +29,7 @@ func InitCache() *Cache {
 		log.Fatal(err)
 	}
 
-	cache.Modules = modules.InitilializeModules()
+	cache.LoadedModules = modules.InitilializeModules()
 
 	cache.connection = connection
 
@@ -80,7 +80,7 @@ func (cache *Cache) GetGuild(discord *discordgo.Session, gid string) *conf.AnyGu
 func ToggleFlagForMod(config *conf.AnyGuild, toEnable ...string) {
 	// POTENTIAL: figure out how to avoid double nested loop
 	for _, moduleName := range toEnable {
-		for _, module := range botCache.Modules {
+		for _, module := range botCache.LoadedModules {
 			if moduleName == module.Name() {
 				config.Flags |= module.Flag()
 			}

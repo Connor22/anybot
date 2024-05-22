@@ -12,6 +12,7 @@ type Module interface {
 	Enabled(uint8) bool
 	Name() string
 	Flag() uint8
+	Start()
 }
 
 type GuildConnectModule interface {
@@ -41,6 +42,12 @@ func InitilializeModules() []Module {
 	}
 
 	return AvailableModules[:]
+}
+
+func StartModules() {
+	for _, module := range AvailableModules {
+		module.Start()
+	}
 }
 
 func SetIntents(discord *discordgo.Session) {

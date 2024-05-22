@@ -10,7 +10,7 @@ import (
 func onMemberUpdateHandler(discord *discordgo.Session, updatedMember *discordgo.GuildMemberUpdate) {
 	cache := storage.GetCache()
 	serverConfig := cache.GetGuild(discord, updatedMember.GuildID)
-	modules := cache.Modules
+	modules := cache.LoadedModules
 
 	for _, module := range modules {
 		memUpdateMod, validModule := module.(mod.MemberUpdateModule)

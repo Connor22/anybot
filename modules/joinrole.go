@@ -9,12 +9,16 @@ import (
 
 type JoinRoleMod struct {
 	flag uint8
-	name string `default:"RoleConflict"`
+	name string `default:"JoinRole"`
 }
 
 func (joinmod *JoinRoleMod) Init(modid int) {
 	joinmod.flag = (1 << modid)
 
+	return
+}
+
+func (joinmod *JoinRoleMod) Start() {
 	return
 }
 

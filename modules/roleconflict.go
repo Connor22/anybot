@@ -24,6 +24,10 @@ func (roleconflictmod *RoleConflictMod) Name() string {
 	return roleconflictmod.name
 }
 
+func (roleconflictmod *RoleConflictMod) Start() {
+	return
+}
+
 func (roleconflictmod *RoleConflictMod) Flag() uint8 {
 	return roleconflictmod.flag
 }
