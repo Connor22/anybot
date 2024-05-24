@@ -58,7 +58,7 @@ func getGuild(discord *discordgo.Session, gid string) *conf.AnyGuild {
 	//TODO - fetch config from backend
 	switch gid {
 	case conf.ANIMENORTH:
-		ToggleFlagForMod(config, "JoinRole")
+		ToggleFlagForMod(config, "RoleConflict")
 	case conf.TESTSERVER:
 		ToggleFlagForMod(config, "JoinRole", "RoleConflict")
 	}

@@ -29,8 +29,8 @@ func main() {
 	session := initBot()
 	defer session.Close()
 
-	storage.StartModules()
-	defer storage.StopModules()
+	// storage.StartModules()
+	// defer storage.StopModules()
 
 	handlers.Init(session)
 

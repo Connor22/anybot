@@ -18,6 +18,10 @@ type Module interface {
 type GuildConnectModule interface {
 	Module
 	OnGuildConnect(*discordgo.GuildCreate, *discordgo.Session, *conf.AnyGuild)
+}
+
+type GuildConnectMemberModule interface {
+	Module
 	OnGuildConnectMember(*discordgo.Member, *discordgo.Session, *conf.AnyGuild)
 }
 
@@ -51,6 +55,7 @@ func StartModules() {
 }
 
 func SetIntents(discord *discordgo.Session) {
+	discord.Identify.Intents |= discordgo.IntentsGuilds
 	for _, module := range AvailableModules {
 		discord.Identify.Intents |= module.Intents()
 	}

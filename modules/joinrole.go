@@ -23,7 +23,7 @@ func (joinmod *JoinRoleMod) Start() {
 }
 
 func (joinmod *JoinRoleMod) Name() string {
-	return joinmod.name
+	return "JoinRole"
 }
 
 func (joinmod *JoinRoleMod) Flag() uint8 {

@@ -5,9 +5,13 @@ import (
 	"anybot/helpers"
 	"log"
 	"slices"
+	"strconv"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
+
+var threshold_in_days int = 14
 
 type RoleConflictMod struct {
 	flag uint8
@@ -21,7 +25,7 @@ func (roleconflictmod *RoleConflictMod) Init(modid int) {
 }
 
 func (roleconflictmod *RoleConflictMod) Name() string {
-	return roleconflictmod.name
+	return "RoleConflict"
 }
 
 func (roleconflictmod *RoleConflictMod) Start() {
@@ -54,13 +58,11 @@ func (roleconflictmod *RoleConflictMod) OnGuildConnectMember(guildMember *discor
 	// Resolve conflicting roles
 	if slices.Contains(guildMember.Roles, joinrole) && slices.Contains(guildMember.Roles, verifyrole) {
 		helpers.RemoveRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
-	} else {
-		log.Println("Not conflicting")
 	}
 }
 
 func (roleconflictmod *RoleConflictMod) OnMemberUpdate(updatedMember *discordgo.GuildMemberUpdate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
-	if len(updatedMember.Roles) == len(updatedMember.BeforeUpdate.Roles) {
+	if updatedMember.BeforeUpdate != nil && len(updatedMember.Roles) == len(updatedMember.BeforeUpdate.Roles) {
 		return
 	}
 
@@ -70,6 +72,25 @@ func (roleconflictmod *RoleConflictMod) OnMemberUpdate(updatedMember *discordgo.
 		if (helpers.WasAdded(updatedMember, verifyrole)) ||
 			(slices.Contains(updatedMember.Roles, verifyrole) && (helpers.WasAdded(updatedMember, joinrole))) {
 			helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, joinrole)
+			if checkAge(threshold_in_days, updatedMember.User.ID) {
+				helpers.AddRole(discord, updatedMember.GuildID, updatedMember.User.ID, conf.NEWATTENDEE)
+				//helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, conf.ATTENDEE)
+				log.Println(updatedMember.User.Username, "'s account is younger than ", threshold_in_days, " days, applying new role")
+			} else {
+				log.Println(updatedMember.User.Username, "'s account is older than ", threshold_in_days, " days")
+			}
 		}
 	}
+}
+
+func checkAge(threshold int, userID string) bool {
+	currentTimestamp := time.Now().UnixMilli()
+	userSnowflake, err := strconv.ParseInt(userID, 10, 64)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	userCreationTimestamp := helpers.ReverseSnowflake(userSnowflake)
+
+	return ((userCreationTimestamp) > (currentTimestamp - int64(86400000*threshold)))
 }

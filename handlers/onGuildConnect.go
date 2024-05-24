@@ -4,6 +4,7 @@ import (
 	"anybot/conf"
 	mod "anybot/modules"
 	"anybot/storage"
+	"log"
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,7 +12,7 @@ import (
 
 func asyncCheckUser(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild, modules []mod.Module) {
 	for _, module := range modules {
-		connectMod, validModule := module.(mod.GuildConnectModule)
+		connectMod, validModule := module.(mod.GuildConnectMemberModule)
 		if validModule && connectMod.Enabled(serverConfig.Flags) {
 			connectMod.OnGuildConnectMember(guildMember, discord, serverConfig)
 		}
@@ -34,7 +35,7 @@ func onGuildConnectHandler(discord *discordgo.Session, newConnect *discordgo.Gui
 	// Start a goroutine for every member to perform initial/recovery checks
 	// e.g. apply joinroles, handle conflicts, etc.
 	var asyncMemberThreads sync.WaitGroup
-	asyncMemberThreads.Add(len(newConnect.Members))
+	log.Println("Checking ", len(newConnect.Members), " members of the guild")
 
 	for _, member := range newConnect.Members {
 		asyncMemberThreads.Add(1)

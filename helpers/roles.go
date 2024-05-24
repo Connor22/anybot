@@ -9,7 +9,7 @@ import (
 
 // Querying
 func WasAdded(member *discordgo.GuildMemberUpdate, roleid string) bool {
-	return slices.Contains(member.Roles, roleid) && !slices.Contains(member.BeforeUpdate.Roles, roleid)
+	return slices.Contains(member.Roles, roleid) && (member.BeforeUpdate != nil && !slices.Contains(member.BeforeUpdate.Roles, roleid))
 }
 
 // Manipulation
