@@ -18,7 +18,11 @@ func (joinmod *JoinRoleMod) Init(modid int) {
 	return
 }
 
-func (joinmod *JoinRoleMod) Start() {
+func (joinmod *JoinRoleMod) Start(discord *discordgo.Session, appID string) {
+	return
+}
+
+func (joinmod *JoinRoleMod) Stop(discord *discordgo.Session, appID string) {
 	return
 }
 
@@ -51,8 +55,10 @@ func (joinmod *JoinRoleMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, d
 }
 
 func (joinmod *JoinRoleMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
+	joinrole := serverConfig.GetJoinRole()
+
 	if len(guildMember.Roles) < 1 {
-		helpers.AddRole(discord, guildMember.GuildID, guildMember.User.ID, conf.ATTENDEE)
+		helpers.AddRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
 	}
 }
 

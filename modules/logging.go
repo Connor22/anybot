@@ -19,7 +19,11 @@ func (logmod *LogMod) Init(modid int) {
 	return
 }
 
-func (logmod *LogMod) Start() {
+func (logmod *LogMod) Start(discord *discordgo.Session, appID string) {
+	return
+}
+
+func (logmod *LogMod) Stop(discord *discordgo.Session, appID string) {
 	return
 }
 

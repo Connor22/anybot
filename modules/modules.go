@@ -12,7 +12,8 @@ type Module interface {
 	Enabled(uint8) bool
 	Name() string
 	Flag() uint8
-	Start()
+	Start(*discordgo.Session, string)
+	Stop(*discordgo.Session, string)
 }
 
 type GuildConnectModule interface {
@@ -48,9 +49,15 @@ func InitilializeModules() []Module {
 	return AvailableModules[:]
 }
 
-func StartModules() {
+func StartModules(discord *discordgo.Session, appID string) {
 	for _, module := range AvailableModules {
-		module.Start()
+		module.Start(discord, appID)
+	}
+}
+
+func StopModules(discord *discordgo.Session, appID string) {
+	for _, module := range AvailableModules {
+		module.Stop(discord, appID)
 	}
 }
 

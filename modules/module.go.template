@@ -19,6 +19,14 @@ func (tempmod *TemplateMod) Init(modid int) {
 	return
 }
 
+func (tempmod *TemplateMod) Start(discord *discordgo.Session, appID string) {
+	return
+}
+
+func (tempmod *TemplateMod) Stop(discord *discordgo.Session, appID string) {
+	return
+}
+
 func (tempmod *TemplateMod) Name() string {
 	return tempmod.name
 }
@@ -38,21 +46,25 @@ func (tempmod *TemplateMod) Enabled(serverFlags uint8) bool {
 }
 
 // no-op
+// function is run when a user joins the server
 func (tempmod *TemplateMod) OnNewMember(guildMember *discordgo.GuildMemberAdd, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
 // no-op
+// function fires when connecting to a server on boot
 func (tempmod *TemplateMod) OnGuildConnect(guildConnection *discordgo.GuildCreate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
 // no-op
+// function is run for each visible member when connecting to a server on boot
 func (tempmod *TemplateMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }
 
 // no-op
+// function is run when a member's roles or permissions are updated
 func (tempmod *TemplateMod) OnMemberUpdate(guildMember *discordgo.GuildMemberUpdate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
 	return
 }

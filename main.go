@@ -16,6 +16,7 @@ import (
 // Command line flags
 var (
 	BotToken = flag.String("token", "", "Bot authorization token")
+	AppID    = flag.String("app", "", "Application ID")
 )
 
 func init() {
@@ -29,8 +30,8 @@ func main() {
 	session := initBot()
 	defer session.Close()
 
-	// storage.StartModules()
-	// defer storage.StopModules()
+	modules.StartModules(session, *AppID)
+	defer modules.StopModules(session, *AppID)
 
 	handlers.Init(session)
 

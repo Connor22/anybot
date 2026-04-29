@@ -28,7 +28,11 @@ func (roleconflictmod *RoleConflictMod) Name() string {
 	return "RoleConflict"
 }
 
-func (roleconflictmod *RoleConflictMod) Start() {
+func (roleconflictmod *RoleConflictMod) Start(discord *discordgo.Session, appID string) {
+	return
+}
+
+func (roleconflictmod *RoleConflictMod) Stop(discord *discordgo.Session, appID string) {
 	return
 }
 
@@ -49,7 +53,7 @@ func (roleconflictmod *RoleConflictMod) Enabled(serverFlags uint8) bool {
 }
 
 func (roleconflictmod *RoleConflictMod) OnGuildConnectMember(guildMember *discordgo.Member, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
-	joinrole, verifyrole := serverConfig.GetJoinRole(), serverConfig.GetVerifyRole()
+	newjoinrole, joinrole, verifyrole := conf.NEWATTENDEE, serverConfig.GetJoinRole(), serverConfig.GetVerifyRole()
 
 	if joinrole == "" {
 		return
@@ -59,6 +63,13 @@ func (roleconflictmod *RoleConflictMod) OnGuildConnectMember(guildMember *discor
 	if slices.Contains(guildMember.Roles, joinrole) && slices.Contains(guildMember.Roles, verifyrole) {
 		helpers.RemoveRole(discord, guildMember.GuildID, guildMember.User.ID, joinrole)
 	}
+
+	// Update role based on age
+	if slices.Contains(guildMember.Roles, newjoinrole) {
+		if !checkAgeUnderThreshold(threshold_in_days, guildMember.User.ID) {
+			helpers.RemoveRole(discord, guildMember.GuildID, guildMember.User.ID, conf.NEWATTENDEE)
+		}
+	}
 }
 
 func (roleconflictmod *RoleConflictMod) OnMemberUpdate(updatedMember *discordgo.GuildMemberUpdate, discord *discordgo.Session, serverConfig *conf.AnyGuild) {
@@ -66,13 +77,20 @@ func (roleconflictmod *RoleConflictMod) OnMemberUpdate(updatedMember *discordgo.
 		return
 	}
 
-	joinrole, verifyrole := serverConfig.GetJoinRole(), serverConfig.GetVerifyRole()
+	newjoinrole, joinrole, verifyrole := conf.NEWATTENDEE, serverConfig.GetJoinRole(), serverConfig.GetVerifyRole()
+
+	// Update role based on age
+	if slices.Contains(updatedMember.Roles, newjoinrole) {
+		if !checkAgeUnderThreshold(threshold_in_days, updatedMember.User.ID) {
+			helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, conf.NEWATTENDEE)
+		}
+	}
 
 	if slices.Contains(updatedMember.Roles, joinrole) {
 		if (helpers.WasAdded(updatedMember, verifyrole)) ||
 			(slices.Contains(updatedMember.Roles, verifyrole) && (helpers.WasAdded(updatedMember, joinrole))) {
 			helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, joinrole)
-			if checkAge(threshold_in_days, updatedMember.User.ID) {
+			if checkAgeUnderThreshold(threshold_in_days, updatedMember.User.ID) {
 				helpers.AddRole(discord, updatedMember.GuildID, updatedMember.User.ID, conf.NEWATTENDEE)
 				//helpers.RemoveRole(discord, updatedMember.GuildID, updatedMember.User.ID, conf.ATTENDEE)
 				log.Println(updatedMember.User.Username, "'s account is younger than ", threshold_in_days, " days, applying new role")
@@ -83,7 +101,7 @@ func (roleconflictmod *RoleConflictMod) OnMemberUpdate(updatedMember *discordgo.
 	}
 }
 
-func checkAge(threshold int, userID string) bool {
+func checkAgeUnderThreshold(threshold int, userID string) bool {
 	currentTimestamp := time.Now().UnixMilli()
 	userSnowflake, err := strconv.ParseInt(userID, 10, 64)
 
